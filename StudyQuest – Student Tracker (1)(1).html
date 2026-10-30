@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>StudyQuest – Student Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@700;800&family=Zen+Kaku+Gothic+New:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06060b;--card:#0f0f18;--ink:#f1efff;--mute:#9b98b8;--pink:#b388ff;--cyan:#5eead4;--gold:#ffd166;--bad:#ff6b8b;--ok:#5eead4;--line:#27263d;--sh:rgba(0,0,0,.6);--l1:#1c1238;--l2:#08080f;color-scheme:dark;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:radial-gradient(900px 420px at 0% -5%,#2a1a55 0,transparent 60%),radial-gradient(700px 400px at 100% 0,#0d3a3d 0,transparent 55%),var(--bg);background-attachment:fixed;color:var(--ink);font:400 15px/1.5 "Zen Kaku Gothic New",system-ui,sans-serif;padding-bottom:84px}
+main{max-width:640px;margin:0 auto;padding:14px}
+h1,h2,.disp{font-family:"Shippori Mincho","Noto Serif JP",Georgia,system-ui,sans-serif;font-weight:800}
+h1{font-size:24px;margin:4px 0 2px;letter-spacing:.02em}
+h2{font-size:16px;margin:0 0 10px}
+p.sub{color:var(--mute);margin:0 0 12px}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:14px;margin-bottom:14px;box-shadow:0 6px 18px var(--sh)}
+label{display:block;font-weight:700;font-size:13px;margin:10px 0 4px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:9px}
+input[type=range]{padding:0;accent-color:var(--pink)}
+input[type=checkbox]{width:auto}
+input:focus,select:focus,textarea:focus,button:focus-visible{outline:3px solid var(--cyan);outline-offset:1px}
+button{font:inherit;font-weight:700;border:1.5px solid var(--line);border-radius:10px;padding:9px 14px;background:var(--pink);color:#10081f;cursor:pointer;box-shadow:0 2px 6px var(--sh)}
+button:active{transform:translateY(1px);box-shadow:none}
+button.ghost{background:var(--card);color:var(--ink)}
+.row{display:flex;gap:8px;align-items:center}.row>*{flex:1}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{background:var(--bg);border:1.5px solid var(--line);padding:3px 10px;border-radius:99px;font-size:13px;font-weight:700}
+.seg{display:flex;gap:6px}.seg button{flex:1;background:var(--card);color:var(--ink)}
+.seg button.on{background:var(--cyan);color:#10264a}.seg button.on.abs{background:var(--bad);color:#fff}
+.subj{border-top:2px dashed var(--mute);padding:10px 0}.subj:first-of-type{border-top:0}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1.5px solid var(--line);display:flex;gap:4px;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));z-index:5}
+nav button{flex:1;background:transparent;color:var(--mute);box-shadow:none;border:2px solid transparent;padding:8px 2px;font-size:12px}
+nav button.on{color:#1a1200;background:var(--gold);border-color:var(--gold)}
+.hero{overflow:hidden;background:linear-gradient(160deg,var(--l1),var(--l2));display:flex;gap:12px;align-items:center}
+.ph{width:104px;height:104px;flex:0 0 104px;border-radius:50%;overflow:hidden;border:3px solid var(--pink);box-shadow:0 0 22px rgba(179,136,255,.5)}.ph img{width:100%;height:100%;object-fit:cover;display:block}
+.sp{padding:10px 0;border-top:1px dashed var(--line)}.sp:first-child{border-top:0}.sp .bar{margin-top:6px}
+.hero svg{width:112px;flex:0 0 112px;align-self:flex-end;margin-bottom:-14px}
+.bubble{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:6px 10px;font-size:13px;font-weight:700;margin-bottom:8px}
+.lv{font-size:30px;line-height:1;color:var(--pink);}
+.bar{height:14px;background:var(--bg);border:1.5px solid var(--line);border-radius:9px;overflow:hidden}.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--pink))}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.stats div{background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:6px;text-align:center;font-size:12px}.stats b{display:block;font-size:18px}
+.badges{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.badge{border:1.5px solid var(--line);border-radius:10px;padding:8px;font-size:13px;background:var(--bg);opacity:.5}.badge.got{opacity:1;background:var(--gold);color:#2b1a55}
+.task{display:flex;gap:10px;align-items:center;padding:8px 0;border-top:2px dashed var(--mute)}.task:first-child{border-top:0}
+.task.done .t{text-decoration:line-through;color:var(--mute)}
+.task button{padding:4px 10px;flex:0 0 auto}
+.tag{font-size:11px;border:1.5px solid var(--line);border-radius:6px;padding:0 6px;background:var(--gold);color:#2b1a55;font-weight:700}
+.ins{padding:9px 0;border-top:2px dashed var(--mute)}.ins:first-child{border-top:0}
+.g{color:var(--ok)}.w{color:var(--gold)}.b{color:var(--bad)}.ins b{font-weight:700}
+.ring{position:fixed;inset:0;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;padding:20px;z-index:20}.ring.hide{display:none}
+.hide{display:none}.mute{color:var(--mute);font-size:13px}
+.note{border:2px solid var(--bad);background:var(--bg);border-radius:10px;padding:10px;margin-bottom:12px}
+#toast{position:fixed;left:50%;bottom:calc(82px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);opacity:0;pointer-events:none;z-index:9;background:var(--gold);color:#2b1a55;border:2px solid #2b1a55;border-radius:12px;padding:8px 16px;font-weight:700;text-align:center;transition:.3s;max-width:90%}
+#toast.on{opacity:1;transform:translate(-50%,0)}#toast.up{background:var(--pink);color:#10081f;font-size:20px}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+</head>
+<body>
+<main>
+<section id="v-home">
+  <div class="card hero">
+    <div id="mascot"></div>
+    <div style="flex:1;min-width:0">
+      <div class="bubble" id="say"></div>
+      <div class="row" style="align-items:flex-end"><div><span class="lv disp" id="lvl"></span><div class="mute" id="title"></div></div><div style="text-align:right"><b id="streak" class="disp"></b><div class="mute">day streak</div></div></div>
+      <div class="bar" style="margin-top:8px"><i id="xpbar"></i></div><div class="mute" id="xptxt"></div>
+    </div>
+  </div>
+  <div class="card"><h2>Today’s missions</h2><div id="missions"></div></div>
+  <div class="card"><h2>Badges</h2><div class="badges" id="badges"></div></div>
+  <div class="card">
+    <h2>Your profile</h2>
+    <label for="name">Your name</label><input id="name" autocomplete="name">
+    <label for="school">School or college name</label><input id="school" placeholder="e.g. St. Xavier’s College">
+    <label for="course">Class / course and year</label><input id="course" placeholder="e.g. B.Sc, 2nd year">
+    <label for="ava">Your student</label><select id="ava"><option value="boy">Boy</option><option value="girl">Girl</option></select>
+    <label for="photo">Your photo</label><input type="file" id="photo" accept="image/*"><button class="ghost" id="rmphoto" style="margin-top:6px">Remove photo</button>
+    <label for="newsub">Subjects</label>
+    <div class="row"><input id="newsub" placeholder="Add a subject"><button id="addsub" style="flex:0 0 auto">Add subject</button></div>
+    <div class="chips" id="sublist" style="margin-top:10px"></div>
+    <button id="save" style="width:100%;margin-top:12px">Save profile</button><p class="mute" id="savemsg"></p>
+  </div>
+  <div class="card">
+    <h2>Backup your data</h2>
+    <p class="mute">Data saves automatically in this browser. Copy a backup to keep it safe or move it to another device.</p>
+    <div class="row"><button class="ghost" id="exp">Create backup</button><button class="ghost" id="imp">Restore backup</button></div>
+    <textarea id="bk" rows="3" style="margin-top:8px" aria-label="Backup code"></textarea><p class="mute" id="bkmsg"></p>
+  </div>
+</section>
+
+<section id="v-day" class="hide">
+  <h1>Daily log</h1><p class="sub">Feed your day. Every entry earns XP.</p>
+  <div class="card"><label for="date">Date</label><input type="date" id="date"></div>
+  <div class="card"><h2>Classes</h2><div id="classes"></div></div>
+  <div class="card">
+    <h2>How are you?</h2>
+    <label for="mood">Mood: <span id="moodv">3</span>/5</label><input type="range" id="mood" min="1" max="5" value="3">
+    <label for="stress">Stress: <span id="stressv">3</span>/5</label><input type="range" id="stress" min="1" max="5" value="3">
+    <div class="row"><div><label for="sleep">Sleep (hours)</label><input type="number" id="sleep" min="0" max="16" step="0.5" value="7"></div>
+    <div><label for="study">Self-study (hours)</label><input type="number" id="study" min="0" max="16" step="0.5" value="2"></div></div>
+    <label for="feel">What’s on your mind? (+5 XP)</label><textarea id="feel" rows="2"></textarea>
+  </div>
+  <button id="savelog" style="width:100%">Save today’s log</button><p class="mute" id="logmsg"></p>
+</section>
+
+<section id="v-quests" class="hide">
+  <h1>To-do list</h1><p class="sub">Your tasks are quests. Clear them to earn XP, and set reminders.</p>
+  <div class="card">
+    <h2>AI planner</h2>
+    <label for="hz">Plan for</label><select id="hz"><option>tomorrow</option><option selected>this week</option><option>this month</option></select>
+    <label for="goal">Goal or upcoming exam (optional)</label><input id="goal" placeholder="e.g. Maths test on Friday">
+    <button id="gen" style="width:100%;margin-top:12px">Generate my plan</button>
+    <p class="mute" id="genmsg"></p><div id="sugg"></div>
+  </div>
+  <div class="card">
+    <label for="qt">New quest</label><input id="qt" placeholder="e.g. Finish physics notes">
+    <div class="row"><div><label for="qp">Difficulty</label><select id="qp"><option value="10">Easy (+10 XP)</option><option value="15" selected>Normal (+15 XP)</option><option value="30">Boss (+30 XP)</option></select></div>
+    <div><label for="qd">Repeat</label><select id="qd"><option value="0">One time</option><option value="1">Every day</option></select></div></div>
+    <label for="qtm">Reminder time (optional)</label><input type="time" id="qtm">
+    <button id="addq" style="width:100%;margin-top:12px">Add quest</button>
+  </div>
+  <div class="card"><h2 id="qh">Quest board</h2><div id="qlist"></div></div>
+  <div class="card">
+    <h2>Alarms</h2>
+    <div class="row"><input id="al" placeholder="Label, e.g. Wake up" aria-label="Alarm label"><input type="time" id="at" aria-label="Alarm time" style="flex:0 0 130px"></div>
+    <div class="row" style="margin-top:8px"><select id="ar" aria-label="Repeat"><option value="1">Every day</option><option value="0">Once</option></select><button id="addal">Set alarm</button></div>
+    <div id="allist" style="margin-top:8px"></div>
+    <button class="ghost" id="notif" style="margin-top:8px">Allow notifications</button>
+    <p class="mute">Alarms and quest reminders ring (sound and vibration) while this page is open. For an alarm that works when the page is closed, also set it in your phone’s clock app.</p>
+  </div>
+</section>
+
+<section id="v-tests" class="hide">
+  <h1>Test results</h1><p class="sub">Each result earns +20 XP.</p>
+  <div class="card">
+    <label for="tsub">Subject</label><select id="tsub"></select>
+    <div class="row"><div><label for="tscore">Marks scored</label><input type="number" id="tscore" min="0"></div>
+    <div><label for="tmax">Out of</label><input type="number" id="tmax" min="1" value="100"></div></div>
+    <label for="tdate">Test date</label><input type="date" id="tdate">
+    <button id="addtest" style="width:100%;margin-top:12px">Add result</button>
+  </div>
+  <div class="card"><h2>Subject-wise percentage</h2><div id="subpct"></div></div>
+  <div class="card"><h2>Recent results</h2><div id="testlist"></div></div>
+</section>
+
+<section id="v-ins" class="hide">
+  <h1>Stats</h1><p class="sub">Your data, analysed.</p>
+  <div class="seg" id="range"><button data-r="1" class="on">Day</button><button data-r="7">Week</button><button data-r="30">Month</button><button data-r="365">Year</button></div>
+  <div id="out" style="margin-top:12px"></div>
+</section>
+</main>
+<div id="ringbox" class="ring hide" role="alertdialog" aria-label="Reminder"><div class="card" style="width:100%;max-width:360px"><h2>Reminder</h2><p id="ring"></p><button id="stopring" style="width:100%">Dismiss</button></div></div>
+<div id="toast" role="status" aria-live="polite"></div>
+<nav>
+  <button data-v="home" class="on">Home</button><button data-v="day">Daily</button><button data-v="quests">To-do</button><button data-v="tests">Tests</button><button data-v="ins">Stats</button>
+</nav>
+<script>
+var KEY="studyquest.v2",OLD="studypulse.v1";
+var S={profile:{name:"",school:"",course:""},subjects:[],logs:{},tests:[],tasks:[],xp:0,aw:{},tl:{}};
+try{var raw=localStorage.getItem(KEY)||localStorage.getItem(OLD);if(raw)S=Object.assign(S,JSON.parse(raw))}catch(e){}
+S.alarms=S.alarms||[];S.fl=S.fl||{};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+var $=function(i){return document.getElementById(i)};
+function ymd(d){var z=new Date(d.getTime()-d.getTimezoneOffset()*6e4);return z.toISOString().slice(0,10)}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+var today=ymd(new Date()),range=1,cur={},view="home";
+
+/* game engine */
+function lvl(x){return Math.floor(Math.sqrt(x/40))+1}
+function base(l){return 40*(l-1)*(l-1)}
+var TITLES=["Class D","Class C","Class B","Class A","Honor Roll","Valedictorian","Legend"];
+function title(l){return TITLES[Math.min(Math.floor((l-1)/2),6)]}
+var tt;function toast(m,up){var t=$("toast");t.textContent=m;t.className="on"+(up?" up":"");clearTimeout(tt);tt=setTimeout(function(){t.className=""},up?2600:1800)}
+function award(k,p,m){if(S.aw[k])return false;var b=lvl(S.xp);S.aw[k]=1;S.xp+=p;save();var a=lvl(S.xp);toast(a>b?"LEVEL UP! Lv "+a+" "+title(a):"+"+p+" XP  "+m,a>b);return true}
+function streak(){var n=0,d=new Date();if(!S.logs[ymd(d)])d.setDate(d.getDate()-1);while(S.logs[ymd(d)]){n++;d.setDate(d.getDate()-1)}return n}
+function taskDone(t){return t.daily?t.doneOn===today:!!t.done}
+var BADGES=[
+ ["First step","Save your first daily log",function(){return Object.keys(S.logs).length>=1}],
+ ["3-day streak","Log 3 days in a row",function(){return streak()>=3}],
+ ["7-day streak","Log 7 days in a row",function(){return streak()>=7}],
+ ["Quest slayer","Clear 10 quests",function(){return Object.keys(S.aw).filter(function(k){return k.indexOf("task:")===0}).length>=10}],
+ ["Test hunter","Add 5 test results",function(){return S.tests.length>=5}],
+ ["Level 5","Reach level 5",function(){return lvl(S.xp)>=5}]];
+
+/* student portrait */
+function mascot(m){
+  var g=S.profile.ava==="girl",hc=g?"#3b2a4d":"#23283a",sk="#f6dcc8",ir=g?"#9a4a72":"#3f6aa8";
+  var B=m==="sad"?["M37 45 L54 40","M66 40 L83 45"]:m==="ok"?["M37 43 L54 42","M66 42 L83 43"]:["M37 44 Q46 39 54 42","M66 42 Q74 39 83 44"];
+  var M=m==="sad"?"M53 79 Q60 75 67 79":m==="ok"?"M53 77 L67 77":"M52 76 Q60 81 68 76";
+  var el="M37 52 Q46 45 55 51 Q46 57 37 52Z",er="M65 51 Q74 45 83 52 Q74 57 65 51Z";
+  var back=g?'<path d="M27 52 C20 14 46 2 62 4 C84 4 100 18 93 56 L99 112 Q84 120 80 100 L40 100 Q36 120 21 112 Z" fill="'+hc+'"/>':'';
+  var front=g?'<path d="M31 54 C29 30 44 14 62 14 C80 14 93 30 89 54 C88 42 82 34 74 30 C68 40 54 38 48 30 C42 36 36 44 31 54Z" fill="'+hc+'"/>':'<path d="M31 54 C26 22 44 8 62 9 C82 9 95 24 89 54 C88 42 84 33 76 29 C70 38 54 36 47 30 C40 36 35 44 31 54Z" fill="'+hc+'"/>';
+  var nk=g?'<path d="M60 108 L49 101 L49 115Z M60 108 L71 101 L71 115Z" fill="#b3243f"/><circle cx="60" cy="108" r="3" fill="#8f1c32"/>':'<path d="M56 108 L64 108 L66 130 L60 137 L54 130Z" fill="#b3243f"/>';
+  return '<svg viewBox="0 0 120 140" role="img" aria-label="Your student avatar"><defs><clipPath id="cl"><path d="'+el+'"/><path d="'+er+'"/></clipPath></defs>'+back+
+  '<path d="M6 140 Q8 106 40 98 L60 114 L80 98 Q112 106 114 140Z" fill="#22305a"/><path d="M44 98 L60 126 L76 98 L60 108Z" fill="#fff"/><path d="M52 84 L52 104 Q60 112 68 104 L68 84Z" fill="#e8c3aa"/>'+nk+
+  '<path d="M40 98 L60 126 M80 98 L60 126" stroke="#141d3a" stroke-width="1.5" fill="none"/><path d="M88 122 h11 v9 q-5.5 5 -11 0z" fill="#d9b25f"/>'+
+  '<path d="M60 14 C84 14 90 36 88 56 C86 76 74 88 60 88 C46 88 34 76 32 56 C30 36 36 14 60 14Z" fill="'+sk+'" stroke="#3a2a3a" stroke-width="1.2"/>'+
+  '<path d="M32 54 C30 70 34 78 40 84 C36 76 35 66 36 56Z" fill="#e8bfa6" opacity=".6"/>'+front+'<path d="M50 15 Q60 11 72 16" stroke="#8a93b8" stroke-width="1.5" fill="none" opacity=".5"/>'+
+  '<path d="'+el+'" fill="#fff"/><path d="'+er+'" fill="#fff"/><g clip-path="url(#cl)"><ellipse cx="46" cy="51.5" rx="4.4" ry="5.2" fill="'+ir+'"/><ellipse cx="74" cy="51.5" rx="4.4" ry="5.2" fill="'+ir+'"/><circle cx="46" cy="52" r="2.1" fill="#141d3a"/><circle cx="74" cy="52" r="2.1" fill="#141d3a"/></g>'+
+  '<circle cx="47.6" cy="49.6" r="1.5" fill="#fff"/><circle cx="75.6" cy="49.6" r="1.5" fill="#fff"/>'+
+  '<path d="M36.5 52 Q46 44 55.5 51 M64.5 51 Q74 44 83.5 52" stroke="#1a1626" stroke-width="2.2" fill="none" stroke-linecap="round"/>'+
+  '<path d="'+B[0]+' M'+B[1].slice(1)+'" stroke="'+hc+'" stroke-width="2.2" fill="none" stroke-linecap="round"/>'+
+  '<path d="M60 62 q-2 5 1.5 6" stroke="#c9967f" stroke-width="1.2" fill="none" stroke-linecap="round"/>'+
+  '<path d="'+M+'" stroke="#a85a66" stroke-width="2" fill="none" stroke-linecap="round"/>'+(m==="happy"||m===undefined?'<ellipse cx="40" cy="68" rx="5" ry="3" fill="#f08aa0" opacity=".25"/><ellipse cx="80" cy="68" rx="5" ry="3" fill="#f08aa0" opacity=".25"/>':'')+'</svg>';
+}
+
+/* nav */
+function show(v){
+  view=v;["home","day","quests","tests","ins"].forEach(function(x){$("v-"+x).classList.toggle("hide",x!==v)});
+  document.querySelectorAll("nav button").forEach(function(b){b.classList.toggle("on",b.dataset.v===v)});
+  if(v==="home")renderHome();if(v==="day")renderDay();if(v==="quests")renderQuests();if(v==="tests")renderTests();if(v==="ins")renderIns();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll("nav button").forEach(function(b){b.onclick=function(){show(b.dataset.v)}});
+
+/* home */
+function renderHome(){
+  var l=lvl(S.xp),lo=base(l),hi=base(l+1),L=S.logs[today],mood=L?L.mood:null;
+  $("mascot").innerHTML=S.profile.photo?'<div class="ph"><img alt="Your photo" src="'+S.profile.photo+'"></div>':mascot(mood&&mood<=2?"sad":mood==3?"ok":"happy");
+  var nm=S.profile.name||"friend",st=streak();
+  $("say").textContent=!Object.keys(S.logs).length?"Hi "+nm+"! Log your first day to start your quest.":!L?"Hey "+nm+", today isn’t logged yet. Feed me your day!":mood<=2?"Tough day, "+nm+". Small wins still count. You’ve got this.":st>=3?st+" days in a row! Don’t break the chain.":"Nice work today, "+nm+"!";
+  $("lvl").textContent="Lv "+l;$("title").textContent=title(l);$("streak").textContent=st;
+  $("xpbar").style.width=Math.round((S.xp-lo)/(hi-lo)*100)+"%";$("xptxt").textContent=S.xp+" XP · "+(hi-S.xp)+" to next level";
+  var tk=S.tasks.filter(function(t){return taskDone(t)}).length;
+  $("missions").innerHTML='<div class="ins">'+(L?"✔":"○")+' Log today’s day <span class="tag">+30 XP</span></div><div class="ins">'+(tk>=1?"✔":"○")+' Clear a quest ('+tk+'/'+S.tasks.length+' done) <span class="tag">+10 to 30 XP</span></div><div class="ins">'+(S.tests.some(function(t){return t.date===today})?"✔":"○")+' Add a test result <span class="tag">+20 XP</span></div><button id="gotodo" class="ghost" style="width:100%;margin-top:10px">Open to-do list</button>';$("gotodo").onclick=function(){show("quests")};
+  $("badges").innerHTML=BADGES.map(function(b){var g=b[2]();return '<div class="badge '+(g?"got":"")+'"><b>'+(g?"★ ":"")+b[0]+'</b><br>'+b[1]+'</div>'}).join("");
+  $("name").value=S.profile.name;$("school").value=S.profile.school;$("course").value=S.profile.course;$("ava").value=S.profile.ava||"boy";
+  $("sublist").innerHTML=S.subjects.map(function(s,i){return '<span class="chip">'+esc(s)+' <a href="#" data-i="'+i+'" style="color:var(--bad);text-decoration:none" aria-label="Remove '+esc(s)+'">×</a></span>'}).join("")||'<span class="mute">No subjects yet.</span>';
+  $("sublist").querySelectorAll("a").forEach(function(a){a.onclick=function(e){e.preventDefault();S.subjects.splice(+a.dataset.i,1);save();renderHome()}});
+}
+$("addsub").onclick=function(){var v=$("newsub").value.trim();if(v&&S.subjects.indexOf(v)<0){S.subjects.push(v);save();$("newsub").value="";renderHome()}};
+$("save").onclick=function(){S.profile={name:$("name").value.trim(),school:$("school").value.trim(),course:$("course").value.trim(),ava:$("ava").value,photo:S.profile.photo};save();$("savemsg").textContent="Profile saved.";renderHome()};
+$("exp").onclick=function(){$("bk").value=JSON.stringify(S);$("bk").select();try{document.execCommand("copy")}catch(e){}$("bkmsg").textContent="Backup ready. Copy it and keep it somewhere safe."};
+$("imp").onclick=function(){try{var d=JSON.parse($("bk").value);if(!d||typeof d!=="object"||!d.logs)throw 0;S=Object.assign({profile:{},subjects:[],logs:{},tests:[],tasks:[],xp:0,aw:{},tl:{}},d);save();$("bkmsg").textContent="Backup restored.";renderHome()}catch(e){$("bkmsg").textContent="That backup code isn’t valid. Paste the full text and try again."}};
+
+$("photo").onchange=function(){var f=this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var c=document.createElement("canvas"),n=240;c.width=c.height=n;var x=c.getContext("2d"),m=Math.min(im.width,im.height);x.drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,n,n);S.profile.photo=c.toDataURL("image/jpeg",0.82);save();$("savemsg").textContent="Photo saved.";renderHome()};im.onerror=function(){$("savemsg").textContent="That file couldn’t be read as an image."};im.src=r.result};r.readAsDataURL(f)};
+$("rmphoto").onclick=function(){delete S.profile.photo;save();$("photo").value="";$("savemsg").textContent="Photo removed.";renderHome()};
+/* daily log */
+var REASONS=["Sick","Low mood or anxiety","Family issue","Transport problem","Overslept","Didn’t understand the subject","Skipped by choice","Other"];
+function renderDay(){
+  var d=$("date").value||today;$("date").value=d;
+  var L=S.logs[d]||{att:{}};cur=JSON.parse(JSON.stringify(L.att||{}));renderClasses();
+  $("mood").value=L.mood||3;$("stress").value=L.stress||3;$("sleep").value=L.sleep!=null?L.sleep:7;$("study").value=L.study!=null?L.study:2;$("feel").value=L.feel||"";
+  $("moodv").textContent=$("mood").value;$("stressv").textContent=$("stress").value;$("logmsg").textContent="";
+}
+function renderClasses(){
+  if(!S.subjects.length){$("classes").innerHTML='<p class="mute">Add your subjects on the Home tab first.</p>';return}
+  $("classes").innerHTML=S.subjects.map(function(s,i){
+    var a=cur[s]||{p:true,r:""};cur[s]=a;
+    return '<div class="subj"><b>'+esc(s)+'</b><div class="seg" style="margin:6px 0"><button data-i="'+i+'" data-p="1" class="'+(a.p?"on":"")+'">Attended</button><button data-i="'+i+'" data-p="0" class="abs '+(!a.p?"on":"")+'">Missed</button></div>'+
+    '<div class="'+(a.p?"hide":"")+'"><select data-r="'+i+'" aria-label="Reason for missing '+esc(s)+'"><option value="">Why did you miss it?</option>'+REASONS.map(function(r){return '<option'+(a.r===r?" selected":"")+'>'+r+'</option>'}).join("")+'</select></div></div>';
+  }).join("");
+  $("classes").querySelectorAll("button").forEach(function(b){b.onclick=function(){cur[S.subjects[+b.dataset.i]].p=b.dataset.p==="1";renderClasses()}});
+  $("classes").querySelectorAll("select").forEach(function(s){s.onchange=function(){cur[S.subjects[+s.dataset.r]].r=s.value}});
+}
+$("date").onchange=renderDay;
+$("mood").oninput=function(){$("moodv").textContent=this.value};
+$("stress").oninput=function(){$("stressv").textContent=this.value};
+$("savelog").onclick=function(){
+  var d=$("date").value||today,miss=S.subjects.filter(function(s){return cur[s]&&!cur[s].p&&!cur[s].r});
+  if(miss.length){$("logmsg").textContent="Pick a reason for missing: "+miss.join(", ")+".";return}
+  S.logs[d]={att:JSON.parse(JSON.stringify(cur)),mood:+$("mood").value,stress:+$("stress").value,sleep:+$("sleep").value,study:+$("study").value,feel:$("feel").value.trim()};
+  save();$("logmsg").textContent="Saved! Check the Stats tab.";
+  var x=0;S.subjects.forEach(function(s){if(cur[s]&&cur[s].p&&award("att:"+d+":"+s,10,"attended "+s))x++});
+  if(S.logs[d].feel)award("feel:"+d,5,"honest note");
+  award("log:"+d,30,"daily log saved");
+};
+
+/* quests */
+function renderQuests(){renderAlarms();
+  var n=S.tasks.filter(taskDone).length;$("qh").textContent="Quest board · "+n+"/"+S.tasks.length+" cleared today";
+  $("qlist").innerHTML=S.tasks.map(function(t,i){var dn=taskDone(t);return '<div class="task '+(dn?"done":"")+'"><button data-d="'+i+'" '+(dn?"disabled":"")+' aria-label="Clear quest">'+(dn?"✔":"Clear")+'</button><span class="t" style="flex:1">'+esc(t.t)+'</span><span class="tag">+'+t.xp+(t.daily?" daily":"")+'</span>'+(t.time?' <span class="tag">'+t.time+'</span>':"")+'<a href="#" data-x="'+i+'" style="color:var(--bad);text-decoration:none" aria-label="Delete quest">×</a></div>'}).join("")||'<p class="mute">No quests yet. Add your first one above.</p>';
+  $("qlist").querySelectorAll("button").forEach(function(b){b.onclick=function(){var t=S.tasks[+b.dataset.d];if(t.daily)t.doneOn=today;else t.done=1;S.tl[today]=(S.tl[today]||0)+1;save();award("task:"+t.id+(t.daily?":"+today:""),t.xp,"quest cleared");renderQuests()}});
+  $("qlist").querySelectorAll("a").forEach(function(a){a.onclick=function(e){e.preventDefault();S.tasks.splice(+a.dataset.x,1);save();renderQuests()}});
+}
+$("addq").onclick=function(){var v=$("qt").value.trim();if(!v)return;S.tasks.push({id:Date.now().toString(36),t:v,xp:+$("qp").value,daily:$("qd").value==="1",time:$("qtm").value});save();$("qt").value="";$("qtm").value="";renderQuests()};
+
+/* tests */
+var PAL=["#b388ff","#5eead4","#ff7eb6","#ffd166","#7cc4ff","#ff9f6b","#a3e635","#f0abfc"];
+function grade(p){return p>=90?"A+":p>=80?"A":p>=70?"B":p>=60?"C":p>=50?"D":"F"}
+function subjPct(tests){
+  var by={},ts=0,tm=0;tests.forEach(function(t){var b=by[t.subj]=by[t.subj]||{s:0,m:0,n:0};b.s+=t.score;b.m+=t.max;b.n++;ts+=t.score;tm+=t.max});
+  var ks=Object.keys(by);if(!ks.length)return '<p class="mute">Add test results to see each subject’s percentage.</p>';
+  var op=Math.round(ts/tm*1000)/10;
+  return '<div class="sp"><div class="row" style="gap:6px"><b style="flex:1">Overall</b><span class="disp" style="flex:0 0 auto;color:var(--gold)">'+op+'%</span></div><div class="mute">'+ts+'/'+tm+' marks · Grade '+grade(op)+'</div><div class="bar"><i style="width:'+Math.min(op,100)+'%;background:var(--gold)"></i></div></div>'+
+  ks.map(function(k){var b=by[k],p=Math.round(b.s/b.m*1000)/10,i=S.subjects.indexOf(k),c=PAL[(i<0?ks.indexOf(k):i)%PAL.length];
+    return '<div class="sp"><div class="row" style="gap:6px"><b style="flex:1">'+esc(k)+'</b><span class="disp" style="flex:0 0 auto;color:'+c+'">'+p+'%</span></div><div class="mute">'+b.s+'/'+b.m+' marks across '+b.n+' test'+(b.n>1?"s":"")+' · Grade '+grade(p)+'</div><div class="bar"><i style="width:'+Math.min(p,100)+'%;background:'+c+'"></i></div></div>'}).join("");
+}
+function renderTests(){
+  $("tsub").innerHTML=S.subjects.map(function(s){return "<option>"+esc(s)+"</option>"}).join("")||"<option value=''>Add subjects first</option>";
+  if(!$("tdate").value)$("tdate").value=today;
+  $("subpct").innerHTML=subjPct(S.tests);
+  var t=S.tests.slice().sort(function(a,b){return b.date.localeCompare(a.date)}).slice(0,12);
+  $("testlist").innerHTML=t.map(function(x){var p=Math.round(x.score/x.max*100);return '<div class="ins"><b>'+esc(x.subj)+'</b> · '+x.score+'/'+x.max+' ('+p+'%)<br><span class="mute">'+x.date+'</span><div class="bar" style="margin-top:4px"><i style="width:'+Math.min(p,100)+'%"></i></div></div>'}).join("")||'<p class="mute">No results yet.</p>';
+}
+$("addtest").onclick=function(){
+  var sc=parseFloat($("tscore").value),mx=parseFloat($("tmax").value),sb=$("tsub").value;
+  if(!sb||isNaN(sc)||!(mx>0)||sc>mx)return;
+  var id=Date.now().toString(36);S.tests.push({id:id,subj:sb,score:sc,max:mx,date:$("tdate").value||today});save();$("tscore").value="";award("test:"+id,20,"test added");renderTests();
+};
+
+/* ai planner, alarms */
+function addTask(x){S.tasks.push({id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),t:x.t,xp:x.xp,daily:!!x.daily,time:x.time||""});save()}
+function ctx(){
+  var by={};S.tests.forEach(function(t){var b=by[t.subj]=by[t.subj]||{s:0,m:0};b.s+=t.score;b.m+=t.max});
+  var pct={};Object.keys(by).forEach(function(k){pct[k]=Math.round(by[k].s/by[k].m*100)});
+  var d=Object.keys(S.logs).sort().slice(-14).map(function(k){return S.logs[k]}),tot=0,pr=0,rs={};
+  d.forEach(function(L){Object.keys(L.att||{}).forEach(function(s){tot++;if(L.att[s].p)pr++;else{var r=L.att[s].r||"unknown";rs[r]=(rs[r]||0)+1}})});
+  return {course:S.profile.course||"",subjects:S.subjects,testPercentBySubject:pct,attendancePercent:tot?Math.round(pr/tot*100):null,missReasons:rs,avgMood:r1(avg(d.map(function(l){return l.mood}).filter(Boolean))),avgSleepHours:r1(avg(d.map(function(l){return l.sleep}).filter(function(x){return x!=null}))),avgStudyHours:r1(avg(d.map(function(l){return l.study}).filter(function(x){return x!=null}))),pendingTasks:S.tasks.filter(function(t){return !taskDone(t)}).map(function(t){return t.t}).slice(0,10)};
+}
+function ruleTasks(c,goal){
+  var o=[],k=Object.keys(c.testPercentBySubject).sort(function(a,b){return c.testPercentBySubject[a]-c.testPercentBySubject[b]})[0];
+  if(goal)o.push({t:"Practice questions for: "+goal,xp:30,daily:false,time:""});
+  if(k)o.push({t:"Revise weak topics in "+k+" (45 min)",xp:15,daily:false,time:""});
+  if(c.attendancePercent!=null&&c.attendancePercent<80)o.push({t:"Attend every class today and note key points",xp:15,daily:true,time:"08:00"});
+  if(c.avgSleepHours!=="–"&&c.avgSleepHours<7)o.push({t:"Phone away and sleep on time",xp:10,daily:true,time:"22:30"});
+  if(c.avgMood!=="–"&&c.avgMood<2.8)o.push({t:"15-minute walk or call a friend",xp:10,daily:false,time:""});
+  o.push({t:"Revise today’s notes (30 min)",xp:15,daily:true,time:"19:00"});
+  o.push({t:"Plan tomorrow’s study slots (10 min)",xp:10,daily:true,time:"21:00"});
+  return o.slice(0,5);
+}
+function clean(l){if(l&&!Array.isArray(l))l=l.tasks;if(!Array.isArray(l))return[];return l.slice(0,6).map(function(x){if(!x)return null;var t=String(x.t||"").trim().slice(0,80),xp=[10,15,30].indexOf(+x.xp)>=0?+x.xp:15,tm=/^([01]\d|2[0-3]):[0-5]\d$/.test(x.time||"")?x.time:"";return t?{t:t,xp:xp,daily:!!x.daily,time:tm}:null}).filter(Boolean)}
+var sug=[];
+function renderSugg(){
+  $("sugg").innerHTML=sug.map(function(x,i){return '<div class="task"><button data-a="'+i+'">Add</button><span class="t" style="flex:1">'+esc(x.t)+'</span><span class="tag">+'+x.xp+(x.daily?" daily":"")+'</span>'+(x.time?'<span class="tag">'+x.time+'</span>':"")+'</div>'}).join("")+(sug.length?'<button class="ghost" id="addall" style="width:100%;margin-top:8px">Add all</button>':"");
+  $("sugg").querySelectorAll("[data-a]").forEach(function(b){b.onclick=function(){addTask(sug[+b.dataset.a]);sug.splice(+b.dataset.a,1);renderSugg();renderQuests()}});
+  var aa=$("addall");if(aa)aa.onclick=function(){sug.forEach(addTask);sug=[];renderSugg();renderQuests()};
+}
+$("gen").onclick=async function(){
+  var c=ctx(),goal=$("goal").value.trim(),hz=$("hz").value,list=[],ai=false,btn=$("gen");
+  btn.disabled=true;$("genmsg").textContent="Planning your tasks…";
+  try{
+    var sm=window.claude?await window.claude.use("sample"):null;
+    if(sm){list=clean(await sm.json("You are a caring, practical study coach for a student. Using the data below, write exactly 5 to-do tasks for "+hz+(goal?", focused on: "+goal:"")+". Mix revision of weak subjects, healthy habits and rest. Be specific and realistic. Reply with ONLY a JSON array of 5 objects with keys t (string, max 70 characters), xp (10, 15 or 30; 30 only for big tasks), daily (true or false), time (24-hour HH:MM reminder time, or empty string). Student data: "+JSON.stringify(c)));ai=list.length>0}
+  }catch(e){}
+  if(!list.length)list=ruleTasks(c,goal);
+  sug=list;renderSugg();btn.disabled=false;
+  $("genmsg").textContent=ai?"AI plan ready. Add the tasks you like.":"AI isn’t available in this view, so here’s a plan based on your data. Add the tasks you like.";
+};
+function renderAlarms(){
+  S.alarms=S.alarms||[];
+  $("allist").innerHTML=S.alarms.map(function(a,i){return '<div class="task"><button class="ghost" data-t="'+i+'">'+(a.on?"On":"Off")+'</button><span class="t" style="flex:1"><b>'+a.time+'</b> '+esc(a.label)+'</span><span class="tag">'+(a.daily?"daily":"once")+'</span><a href="#" data-x="'+i+'" style="color:var(--bad);text-decoration:none" aria-label="Delete alarm">×</a></div>'}).join("")||'<p class="mute">No alarms yet.</p>';
+  $("allist").querySelectorAll("button").forEach(function(b){b.onclick=function(){var a=S.alarms[+b.dataset.t];a.on=!a.on;save();renderAlarms()}});
+  $("allist").querySelectorAll("a").forEach(function(a){a.onclick=function(e){e.preventDefault();S.alarms.splice(+a.dataset.x,1);save();renderAlarms()}});
+}
+$("addal").onclick=function(){var t=$("at").value;if(!t)return;S.alarms=S.alarms||[];S.alarms.push({id:Date.now().toString(36),label:$("al").value.trim()||"Alarm",time:t,daily:$("ar").value==="1",on:true});save();$("al").value="";renderAlarms();toast("Alarm set for "+t)};
+$("notif").onclick=function(){try{Notification.requestPermission().then(function(r){toast(r==="granted"?"Notifications on":"Notifications blocked")})}catch(e){toast("Notifications aren’t available here")}};
+var ac;
+function beep(){try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();if(ac.resume)ac.resume();[0,0.35,0.7].forEach(function(d){var o=ac.createOscillator(),g=ac.createGain();o.frequency.value=880;g.gain.value=0.2;o.connect(g);g.connect(ac.destination);o.start(ac.currentTime+d);o.stop(ac.currentTime+d+0.2)})}catch(e){}try{if(navigator.vibrate)navigator.vibrate([300,150,300])}catch(e){}}
+function ring(m){beep();$("ring").textContent=m;$("ringbox").classList.remove("hide");try{if(window.Notification&&Notification.permission==="granted")new Notification("StudyQuest",{body:m})}catch(e){}}
+$("stopring").onclick=function(){$("ringbox").classList.add("hide")};
+function tick(){
+  var n=new Date(),hm=("0"+n.getHours()).slice(-2)+":"+("0"+n.getMinutes()).slice(-2),d=ymd(n);S.fl=S.fl||{};
+  (S.alarms||[]).forEach(function(a){if(a.on&&a.time===hm&&S.fl["a"+a.id]!==d){S.fl["a"+a.id]=d;if(!a.daily)a.on=false;save();ring("Alarm: "+a.label);if(view==="quests")renderAlarms()}});
+  (S.tasks||[]).forEach(function(t){if(t.time&&t.time===hm&&!taskDone(t)&&S.fl["t"+t.id]!==d){S.fl["t"+t.id]=d;save();ring("Quest reminder: "+t.t)}});
+}
+setInterval(tick,15000);tick();
+/* stats */
+function avg(a){return a.length?a.reduce(function(x,y){return x+y},0)/a.length:null}
+function r1(n){return n==null?"–":Math.round(n*10)/10}
+$("range").querySelectorAll("button").forEach(function(b){b.onclick=function(){range=+b.dataset.r;$("range").querySelectorAll("button").forEach(function(x){x.classList.toggle("on",x===b)});renderIns()}});
+function dayScore(L){var subs=Object.keys(L.att||{}),pr=subs.filter(function(s){return L.att[s].p}).length,a=subs.length?pr/subs.length:1;return Math.round(100*(0.4*a+0.2*((L.mood||3)/5)+0.15*Math.min((L.sleep||0)/8,1)+0.25*Math.min((L.study||0)/4,1)))}
+function renderIns(){
+  var end=new Date(),start=new Date();start.setDate(end.getDate()-(range-1));var s0=ymd(start),s1=ymd(end);
+  var logs=Object.keys(S.logs).filter(function(d){return d>=s0&&d<=s1}).sort().map(function(d){return Object.assign({d:d},S.logs[d])});
+  var label={1:"today",7:"the last 7 days",30:"the last 30 days",365:"the last 12 months"}[range];
+  if(!logs.length){$("out").innerHTML='<div class="card"><h2>Nothing logged for '+label+'</h2><p class="mute">Save a day in the Daily tab and your analysis appears here.</p></div>';return}
+  var tot=0,pres=0,reasons={},bySub={};
+  logs.forEach(function(L){Object.keys(L.att||{}).forEach(function(s){tot++;var a=L.att[s];bySub[s]=bySub[s]||{t:0,p:0};bySub[s].t++;if(a.p){pres++;bySub[s].p++}else{var r=a.r||"No reason";reasons[r]=(reasons[r]||0)+1}})});
+  var attP=tot?Math.round(pres/tot*100):null;
+  var mood=avg(logs.map(function(l){return l.mood}).filter(Boolean)),sleep=avg(logs.map(function(l){return l.sleep}).filter(function(x){return x!=null})),study=avg(logs.map(function(l){return l.study}).filter(function(x){return x!=null}));
+  var score=Math.round(avg(logs.map(dayScore)));
+  var tests=S.tests.filter(function(t){return t.date>=s0&&t.date<=s1}),tAvg=tests.length?avg(tests.map(function(t){return t.score/t.max*100})):null;
+  var q=0;Object.keys(S.tl).forEach(function(d){if(d>=s0&&d<=s1)q+=S.tl[d]});
+  var I=[];function add(c,t){I.push('<div class="ins"><b class="'+c+'">'+({g:"Going well",w:"Watch this",b:"Needs attention"}[c])+'.</b> '+t+'</div>')}
+  if(attP!=null){if(attP>=90)add("g","Attendance is "+attP+"%. Keep it up.");else if(attP>=75)add("w","Attendance is "+attP+"%. Many colleges need 75%, so there’s little room left.");else add("b","Attendance is "+attP+"%, below the usual 75% requirement.")}
+  var rs=Object.keys(reasons).sort(function(a,b){return reasons[b]-reasons[a]});
+  if(rs.length)add("w","You missed "+(tot-pres)+" class"+(tot-pres>1?"es":"")+". Most common reason: <b>"+esc(rs[0])+"</b> ("+reasons[rs[0]]+"×)."+(rs[0]==="Overslept"&&sleep<6.5?" Your sleep averages "+r1(sleep)+"h, which likely drives this.":""));
+  var weak=Object.keys(bySub).filter(function(s){return bySub[s].t>=2}).sort(function(a,b){return bySub[a].p/bySub[a].t-bySub[b].p/bySub[b].t})[0];
+  if(weak&&bySub[weak].p<bySub[weak].t)add("w","Lowest attendance: "+esc(weak)+" ("+Math.round(bySub[weak].p/bySub[weak].t*100)+"%).");
+  if(sleep!=null&&sleep<6.5)add("b","Sleep averages "+r1(sleep)+"h. Under 7h usually lowers focus and mood.");else if(sleep!=null)add("g","Sleep averages "+r1(sleep)+"h, a healthy range.");
+  var lowM=logs.filter(function(l){return (l.mood&&l.mood<=2)||l.stress>=4}).length;
+  if((mood!=null&&mood<2.6)||lowM>=3)add("b","Mood was low or stress high on "+lowM+" day"+(lowM>1?"s":"")+".");else if(mood!=null&&mood>=3.8)add("g","Mood is steady at "+r1(mood)+"/5.");
+  var ab=logs.filter(function(l){return Object.keys(l.att||{}).some(function(s){return !l.att[s].p})}),pd=logs.filter(function(l){return ab.indexOf(l)<0});
+  if(ab.length>=2&&pd.length>=2){var ma=avg(ab.map(function(l){return l.mood||3})),mp=avg(pd.map(function(l){return l.mood||3}));if(mp-ma>=0.8)add("w","Mood is lower on days you miss class ("+r1(ma)+" vs "+r1(mp)+"). Skipping may be linked to how you feel.")}
+  if(tAvg!=null){add(tAvg>=75?"g":tAvg>=50?"w":"b","Test average is "+Math.round(tAvg)+"% across "+tests.length+" test"+(tests.length>1?"s":"")+".");
+    if(tests.length>=4){var ts=tests.slice().sort(function(a,b){return a.date.localeCompare(b.date)}),h=Math.floor(ts.length/2),a1=avg(ts.slice(0,h).map(function(t){return t.score/t.max*100})),a2=avg(ts.slice(h).map(function(t){return t.score/t.max*100}));
+      if(a2-a1>=5)add("g","Scores are trending up ("+Math.round(a1)+"% to "+Math.round(a2)+"%).");else if(a1-a2>=5)add("b","Scores are trending down ("+Math.round(a1)+"% to "+Math.round(a2)+"%).")}
+    var ps={};tests.forEach(function(t){(ps[t.subj]=ps[t.subj]||[]).push(t.score/t.max*100)});var wk=Object.keys(ps).sort(function(a,b){return avg(ps[a])-avg(ps[b])})[0];if(wk&&Object.keys(ps).length>1)add("w","Weakest subject by marks: "+esc(wk)+" ("+Math.round(avg(ps[wk]))+"%).")}
+  if(study!=null&&study<1.5)add("w","Self-study averages "+r1(study)+"h. One extra hour a day adds up fast.");
+  if(q)add("g","You cleared "+q+" quest"+(q>1?"s":"")+" in this period.");
+  var care=(mood!=null&&mood<2.3)||lowM>=Math.max(3,logs.length*0.5);
+  $("out").innerHTML='<div class="card"><div class="mute">'+({1:"Day",7:"Weekly",30:"Monthly",365:"Yearly"}[range])+' report'+(S.profile.school?" · "+esc(S.profile.school):"")+'</div>'+
+   '<div class="row" style="margin-top:8px"><div><div class="disp" style="font-size:40px;line-height:1">'+score+'</div><div class="mute">Performance /100</div></div><div><div class="bar"><i style="width:'+score+'%"></i></div></div></div>'+
+   '<div class="stats"><div><b>'+(attP==null?"–":attP+"%")+'</b>Attendance</div><div><b>'+r1(mood)+'</b>Mood /5</div><div><b>'+(tAvg==null?"–":Math.round(tAvg)+"%")+'</b>Tests</div><div><b>'+r1(sleep)+'h</b>Sleep</div><div><b>'+r1(study)+'h</b>Study</div><div><b>'+logs.length+'</b>Days logged</div></div></div>'+
+   (care?'<div class="note">You’ve had a rough stretch. Talking to a friend, family member, or your school or college counsellor can really help. You don’t have to carry it alone.</div>':"")+
+   (tests.length?'<div class="card"><h2>Subject-wise percentage</h2>'+subjPct(tests)+'</div>':"")+'<div class="card"><h2>What your data says</h2>'+I.join("")+'</div><p class="mute">Insights use simple rules on your own logs. They are guidance, not a medical or professional assessment.</p>';
+}
+renderHome();
+</script>
+</body>
+</html>
